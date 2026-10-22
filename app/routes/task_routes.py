@@ -7,9 +7,16 @@ tasks_bp = Blueprint("tasks_bp", __name__, url_prefix="/tasks")
 
 @tasks_bp.get("")
 def get_tasks():
+    sort = request.args.get("sort")
     query = db.select(Task)
-    tasks = db.session.scalars(query).all()
 
+    if sort == "asc":
+        query = query.order_by(Task.title.asc())
+    elif sort == "desc":
+        query = query.order_by(Task.title.desc())
+
+    tasks = db.session.scalars(query).all()
+    
     tasks_response = []
     for task in tasks:
         tasks_response.append(task.to_dict())
