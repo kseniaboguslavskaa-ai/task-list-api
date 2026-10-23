@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 from ..db import db
 from ..models.task import Task
-from .route_utilities import validate_model
+from .route_utilities import validate_model, create_model
 from datetime import datetime
 import os
 import requests
@@ -29,16 +29,7 @@ def get_tasks():
 @tasks_bp.post("")
 def create_task():
     task_data = request.get_json()
-
-    try:
-        new_task = Task.from_dict(task_data)
-    except KeyError:
-        return jsonify({"details": "Invalid data"}), 400
-
-    db.session.add(new_task)
-    db.session.commit()
-
-    return jsonify(new_task.to_dict()), 201
+    return create_model(Task, task_data)
 
 @tasks_bp.get("/<task_id>")
 def get_task(task_id):

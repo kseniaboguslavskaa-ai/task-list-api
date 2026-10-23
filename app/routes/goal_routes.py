@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 from ..db import db
 from ..models.goal import Goal
-from .route_utilities import validate_model
+from .route_utilities import validate_model, create_model
 from ..models.task import Task
 
 goals_bp = Blueprint(
@@ -17,16 +17,7 @@ def goal_not_found(error):
 @goals_bp.post("")
 def create_goal():
     goal_data = request.get_json()
-
-    try:
-        new_goal = Goal.from_dict(goal_data)
-    except KeyError:
-        return jsonify({"details": "Invalid data"}), 400
-
-    db.session.add(new_goal)
-    db.session.commit()
-
-    return jsonify(new_goal.to_dict()), 201
+    return create_model(Goal, goal_data)
 
 @goals_bp.get("")
 def get_goals():
