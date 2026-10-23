@@ -10,6 +10,8 @@ def validate_model(model, model_id):
     instance = db.session.get(model, model_id)
 
     if instance is None:
+        if model.__name__ == "Goal":
+            abort(make_response(jsonify({"message": "Goal not found"}), 404))
         abort(make_response(jsonify({"details": "Not found"}), 404))
-
+        
     return instance
